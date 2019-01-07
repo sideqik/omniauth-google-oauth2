@@ -8,7 +8,7 @@ module OmniAuth
   module Strategies
     # Main class for Google OAuth2 strategy.
     class GoogleOauth2 < OmniAuth::Strategies::OAuth2
-      ALLOWED_ISSUERS = ['accounts.google.com', 'https://accounts.google.com'].freeze
+      ALLOWED_ISSUER = 'https://accounts.google.com'
       BASE_SCOPE_URL = 'https://www.googleapis.com/auth/'
       BASE_SCOPES = %w[profile email openid].freeze
       DEFAULT_SCOPE = 'email,profile'
@@ -66,7 +66,7 @@ module OmniAuth
           # JWT.decode is false since no verification key is provided.
           verify_claims(decoded,
                         verify_iss: true,
-                        iss: ALLOWED_ISSUERS,
+                        iss: ALLOWED_ISSUER,
                         verify_aud: true,
                         aud: options.client_id,
                         verify_sub: false,
