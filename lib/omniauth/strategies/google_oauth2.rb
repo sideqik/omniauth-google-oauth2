@@ -64,17 +64,17 @@ module OmniAuth
 
           # We have to manually verify the claims because the third parameter to
           # JWT.decode is false since no verification key is provided.
-          ::JWT::Verify.verify_claims(decoded,
-                                      verify_iss: true,
-                                      iss: ALLOWED_ISSUERS,
-                                      verify_aud: true,
-                                      aud: options.client_id,
-                                      verify_sub: false,
-                                      verify_expiration: true,
-                                      verify_not_before: true,
-                                      verify_iat: true,
-                                      verify_jti: false,
-                                      leeway: options[:jwt_leeway])
+          verify_claims(decoded,
+                        verify_iss: true,
+                        iss: ALLOWED_ISSUERS,
+                        verify_aud: true,
+                        aud: options.client_id,
+                        verify_sub: false,
+                        verify_expiration: true,
+                        verify_not_before: true,
+                        verify_iat: true,
+                        verify_jti: false,
+                        leeway: options[:jwt_leeway])
 
           hash[:id_info] = decoded
         end
@@ -95,6 +95,14 @@ module OmniAuth
       alias build_access_token custom_build_access_token
 
       private
+
+      def verify_claims(payload, options)
+        options.each do |key, val|
+          next unless key.to_s =~ /verify/
+
+          ::JWT::Verify.send(key, payload, options) if val
+        end
+      end
 
       def callback_url
         options[:redirect_uri] || (full_host + script_name + callback_path)
